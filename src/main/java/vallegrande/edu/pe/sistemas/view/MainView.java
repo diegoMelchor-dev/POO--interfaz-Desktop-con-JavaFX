@@ -1,209 +1,142 @@
 package vallegrande.edu.pe.sistemas.view;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import vallegrande.edu.pe.sistemas.model.Usuario;
 
-public class MainView extends BorderPane {
+import java.net.URL;
+import java.util.List;
+
+public class MainView {
+
     private Button btnInicio;
     private Button btnUsuarios;
-    private Button btnProductos;
-    private Button btnReportes;
-    private Button btnConfiguracion;
-    private Button btnCitas;
+    private Button btnRegistrar;
+    private TextField txtNombre;
+    private TextField txtApellido;
+    private TextField txtCorreo;
+    private TextField txtEstado;
+    private VBox panelInicio;
+    private VBox panelUsuarios;
+    private TableView<Usuario> tablaUsuarios;
 
-    public MainView(){
-        crearMenu();
-        mostrarInicio();
+    @SuppressWarnings("unchecked")
+    public MainView(Stage stage) {
+        try {
+            URL fxmlUrl = getClass().getResource("/MainView.fxml");
+            if (fxmlUrl == null) {
+                fxmlUrl = getClass().getResource("/vallegrande/edu/pe/sistemas/MainView.fxml");
+            }
+            if (fxmlUrl == null) {
+                fxmlUrl = getClass().getClassLoader().getResource("MainView.fxml");
+            }
+            if (fxmlUrl == null) {
+                throw new RuntimeException("¡Atención! No se encontró ningún archivo .fxml en resources.");
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
+
+            btnInicio = (Button) root.lookup("#btnInicio");
+            btnUsuarios = (Button) root.lookup("#btnUsuarios");
+            btnRegistrar = (Button) root.lookup("#btnRegistrar");
+            txtNombre = (TextField) root.lookup("#txtNombre");
+            txtApellido = (TextField) root.lookup("#txtApellido");
+            txtCorreo = (TextField) root.lookup("#txtCorreo");
+            txtEstado = (TextField) root.lookup("#txtEstado");
+            panelInicio = (VBox) root.lookup("#panelInicio");
+            panelUsuarios = (VBox) root.lookup("#panelUsuarios");
+            tablaUsuarios = (TableView<Usuario>) root.lookup("#tablaUsuarios");
+
+            crearColumnas();
+
+            Scene scene = new Scene(root);
+            stage.setTitle("Sistema de Gestión - Usuarios");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void crearMenu(){
-        VBox menu = new VBox(15);
-        menu.setPadding(new Insets(25));
-        menu.setPrefWidth(220);
-        Label titulo = new Label("🖥️ MI SISTEMA");
-        titulo.setStyle(
-                "-fx-font-size: 20px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-text-fill: white;"
-        );
-        btnInicio = crearBoton("Inicio");
-        btnUsuarios = crearBoton("Usuarios");
-        btnProductos = crearBoton("Productos");
-        btnReportes = crearBoton("Reportes");
-        btnConfiguracion = crearBoton("Configuración");
-        btnCitas = crearBoton("Citas");
+    // Define las columnas de la tabla
+    private void crearColumnas() {
+        TableColumn<Usuario, Integer> colId = new TableColumn<>("ID");
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-        menu.getChildren().addAll(
-                titulo,
-                btnInicio,
-                btnUsuarios,
-                btnProductos,
-                btnReportes,
-                btnConfiguracion,
-                btnCitas
-        );
-        menu.setStyle("-fx-background-color: #2563EB;");
-        setLeft(menu);
+        TableColumn<Usuario, String> colNombre = new TableColumn<>("Nombre");
+        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+
+        TableColumn<Usuario, String> colApellido = new TableColumn<>("Apellido");
+        colApellido.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+
+        TableColumn<Usuario, String> colCorreo = new TableColumn<>("Correo");
+        colCorreo.setCellValueFactory(new PropertyValueFactory<>("correo"));
+
+        TableColumn<Usuario, String> colEstado = new TableColumn<>("Estado");
+        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
+
+        tablaUsuarios.getColumns().addAll(colId, colNombre, colApellido, colCorreo, colEstado);
     }
 
-    private Button crearBoton(String texto){
-        Button boton = new Button(texto);
-        boton.setPrefWidth(170);
-        boton.setPrefHeight(40);
-        boton.setStyle("-fx-background-color: white;" +
-                "-fx-text-fill: #1E3A8A;" +
-                "-fx-font-size: 14px;" +
-                "-fx-background-radius: 8;"
-        );
-        return boton;
-    }
-
-    public void mostrarInicio(){
-        VBox contenido = new VBox(10);
-        contenido.setAlignment(Pos.CENTER);
-        Label titulo = new Label("BIENVENIDO ");
-        titulo.setStyle("-fx-font-size: 28px;" +
-                "-fx-font-weight: bold;");
-        Label texto = new Label("Panel principal de mi sistema");
-        contenido.getChildren().addAll(
-                titulo,
-                texto
-        );
-        setCenter(contenido);
-    }
-
-    public void mostrarUsuarios(){
-        VBox contenido = new VBox(20);
-        contenido.setPadding(new Insets(30));
-        Label titulo = new Label ("USUARIOS");
-        titulo.setStyle("-fx-font-size: 26px;" +
-                "-fx-font-weight: bold;");
-        HBox tarjetas = new HBox(15);
-        tarjetas.getChildren().addAll(
-                crearTarjeta("Carlos Perez", "Administrador"),
-                crearTarjeta("Maria Lopez", "Vendedora"),
-                crearTarjeta("Piero Ramos", "Supervisor")
-        );
-        contenido.getChildren().addAll(
-                titulo,
-                tarjetas
-        );
-        setCenter(contenido);
-    }
-
-    public void mostrarProductos(){
-        VBox contenido = new VBox(20);
-        contenido.setPadding(new Insets(30));
-        Label titulo = new Label("PRODUCTOS");
-        titulo.setStyle("-fx-font-size: 26px;" +
-                "-fx-font-weight: bold;");
-        HBox tarjetas = new HBox(15);
-        tarjetas.getChildren().addAll(
-                crearTarjeta("Laptop Lenovo", "S/ 2500"),
-                crearTarjeta("Mouse Logitech", "S/ 80"),
-                crearTarjeta("Teclado Mecánico", "S/ 180")
-        );
-        contenido.getChildren().addAll(
-                titulo,
-                tarjetas
-        );
-        setCenter(contenido);
-    }
-
-    public void mostrarReportes(){
-        VBox contenido = new VBox(20);
-        contenido.setPadding(new Insets(30));
-        Label titulo = new Label("REPORTES");
-        titulo.setStyle("-fx-font-size: 26px;" +
-                "-fx-font-weight: bold;");
-        HBox tarjetas = new HBox(15);
-        tarjetas.getChildren().addAll(
-                crearTarjeta("Ventas del mes", "S/ 12,450"),
-                crearTarjeta("Nuevos usuarios", "34"),
-                crearTarjeta("Productos vendidos", "128")
-        );
-        contenido.getChildren().addAll(
-                titulo,
-                tarjetas
-        );
-        setCenter(contenido);
-    }
-
-    public void mostrarConfiguracion(){
-        VBox contenido = new VBox(20);
-        contenido.setPadding(new Insets(30));
-        Label titulo = new Label("CONFIGURACIÓN");
-        titulo.setStyle("-fx-font-size: 26px;" +
-                "-fx-font-weight: bold;");
-        HBox tarjetas = new HBox(15);
-        tarjetas.getChildren().addAll(
-                crearTarjeta("Idioma", "Español"),
-                crearTarjeta("Tema", "Claro"),
-                crearTarjeta("Notificaciones", "Activadas")
-        );
-        contenido.getChildren().addAll(
-                titulo,
-                tarjetas
-        );
-        setCenter(contenido);
-    }
-
-    public void mostrarCitas(){
-        VBox contenido = new VBox(20);
-        contenido.setPadding(new Insets(30));
-        Label titulo = new Label("CITAS");
-        titulo.setStyle("-fx-font-size: 26px;" +
-                "-fx-font-weight: bold;");
-        HBox tarjetas = new HBox(15);
-        tarjetas.getChildren().addAll(
-                crearTarjeta("Cliente: Ana Torres", "10:00 am"),
-                crearTarjeta("Cliente: Luis Vega", "12:30 pm"),
-                crearTarjeta("Cliente: Rosa Díaz", "3:00 pm")
-        );
-        contenido.getChildren().addAll(
-                titulo,
-                tarjetas
-        );
-        setCenter(contenido);
-    }
-
-    private VBox crearTarjeta(String titulo, String detalle){
-        VBox tarjeta = new VBox(8);
-        tarjeta.setPadding(new Insets(20));
-        tarjeta.setPrefWidth(180);
-        tarjeta.setStyle("-fx-background-color: #EAF2FF;" +
-                "-fx-background-radius: 12;");
-        Label nombre = new Label(titulo);
-        nombre.setStyle("-fx-font-size: 16px;" + "-fx-font-weight: bold;");
-        Label info = new Label(detalle);
-        tarjeta.getChildren().addAll(
-                nombre,
-                info
-        );
-        return tarjeta;
-    }
-
-    public Button getBtnInicio(){
+    public Button getBtnInicio() {
         return btnInicio;
     }
-    public Button getBtnUsuarios(){
+
+    public Button getBtnUsuarios() {
         return btnUsuarios;
     }
-    public Button getBtnProductos(){
-        return btnProductos;
+
+    public Button getBtnRegistrar() {
+        return btnRegistrar;
     }
-    public Button getBtnReportes(){
-        return btnReportes;
+
+    public String getNombre() {
+        return txtNombre.getText();
     }
-    public Button getBtnConfiguracion(){
-        return btnConfiguracion;
+
+    public String getApellido() {
+        return txtApellido.getText();
     }
-    public Button getBtnCitas(){
-        return btnCitas;
+
+    public String getCorreo() {
+        return txtCorreo.getText();
+    }
+
+    public String getEstado() {
+        return txtEstado.getText();
+    }
+
+    public void mostrarInicio() {
+        mostrarPanel(panelInicio, panelUsuarios);
+    }
+
+    public void mostrarUsuarios() {
+        mostrarPanel(panelUsuarios, panelInicio);
+    }
+
+    private void mostrarPanel(VBox mostrar, VBox ocultar) {
+        mostrar.setVisible(true);
+        mostrar.setManaged(true);
+        ocultar.setVisible(false);
+        ocultar.setManaged(false);
+    }
+
+    public void mostrarDatosUsuarios(List<Usuario> usuarios) {
+        tablaUsuarios.setItems(FXCollections.observableArrayList(usuarios));
+        // Limpia el formulario después de registrar
+        txtNombre.clear();
+        txtApellido.clear();
+        txtCorreo.clear();
+        txtEstado.clear();
     }
 }
